@@ -1,6 +1,7 @@
 import argparse
 import copy
 import itertools
+import linecache
 import numpy as np
 
 from gensim.models import KeyedVectors
@@ -30,9 +31,14 @@ def calculate_vector_cosine_similarity(vector1, vector2):
 def load_embedding_with_gensim(embedding_name):
     if embedding_name.endswith('bin'):
         binary = True
+        no_header = False
     else:
         binary = False
-    embedding = KeyedVectors.load_word2vec_format(embedding_name, binary=binary)
+        if linecache.getline(embedding_name, 1).split() == 2:
+            no_header = False
+        else:
+            no_header = True
+    embedding = KeyedVectors.load_word2vec_format(embedding_name, binary=binary, no_header=no_header)
 
     return embedding
 
